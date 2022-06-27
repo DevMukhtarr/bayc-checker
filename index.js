@@ -13,18 +13,22 @@ app.use(express.json())
 app.get('/', (req, res) =>{
     res.render("index")
 })
-app.get('/', (req, res) =>{
-    res.send("send whatsapp messages without saving number")
-})
 
-app.post('/send', async (req, res) =>{
-    const { phone_number } = await req.body;
+const corsCheck = (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  };
+
+app.post('/send',corsCheck, (req, res) =>{
+    const { phone_number } = req.body;
 
     if(!phone_number){
         res.send("phone number is required")
     }
 
     res.status(301).redirect(`https://api.whatsapp.com/send/?phone=%2B234${phone_number}&text&app_absent=0`)
+    // console.log(phone_number)
 })
 
 app.listen(PORT, () =>{
