@@ -13,13 +13,8 @@ fs.createReadStream(path)
   .on("data", function (row) {
     const address  = row[0].trim();
 
-    const quantityFromCSV = row[1].trim();
-    const quantity = ether.parseUnits(quantityFromCSV, 18);
-
-    const PendingBalanceUpdate = row[2].trim()
-
     const leaf = keccak256(
-      ether.solidityPacked(["address", "uint256", "string"], [address, quantity, PendingBalanceUpdate])
+      ether.solidityPacked(["address"], [address])
   )
     addresses.push(leaf);
   })
@@ -33,15 +28,13 @@ fs.createReadStream(path)
     const rootHash = merkleTree.getHexRoot();
 
     const targetEntry = {
-      address: "0xdefc10efb0e353a00f9727f87f3071a9bc1fb245",
-      amount: ether.parseUnits("5", 18),
-      PendingBalanceUpdate: "No"
-  }
+      address: "0xdefc10efb0e353a00f9727f87f3071a9bc1fb245"
+    }
 
     // const claimingAddress = leafNode[2];
     const leaf = keccak256(
-      ether.solidityPacked(["address", "uint256", "string"],
-         [targetEntry.address, targetEntry.amount, targetEntry.PendingBalanceUpdate])
+      ether.solidityPacked(["address"],
+         [targetEntry.address])
   );
 
    
