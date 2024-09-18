@@ -11,7 +11,7 @@ contract Claimtoken {
 
     mapping (address => bool) claimedAirdrop;
 
-    event AirdropClaimed(address holder, uint256 time);
+    event AirdropClaimed(address holder);
 
     modifier onlyOwner () {
         require(msg.sender == owner, "Only owner can perform this action");
@@ -41,6 +41,6 @@ contract Claimtoken {
 
         claimedAirdrop[msg.sender] = true;
 
-        emit AirdropClaimed(msg.sender, block.timestamp);
+        emit AirdropClaimed(msg.sender);
     }
 }

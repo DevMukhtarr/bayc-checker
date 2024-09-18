@@ -69,7 +69,7 @@ describe("AirdropDeploymentAndReward", function () {
     return { rewardtoken, owner,claimairdrop, rootHash, impersonatedSigner, merkleProof, leafNodes };
   }
 
-  describe("Deployment", function () {
+  describe("Deployment and Claiming", function () {
     it("Should check if reward token owner is set successfully", async () => {
       const { owner, rewardtoken} = await loadFixture(deployRewardtoken);
 
@@ -91,12 +91,8 @@ describe("AirdropDeploymentAndReward", function () {
         impersonatedSigner, 
         rewardtoken, 
         claimairdrop, 
-        rootHash,
-        leafNodes,
         merkleProof
        } = await loadFixture(deployClaimtoken);
-
-      //  const IERC20 = await ethers.getContractAt("contracts/interfaces/IERC20.sol:IERC20");
 
       const tx = await owner.sendTransaction({
         to: impersonatedSigner.address,
@@ -113,9 +109,37 @@ describe("AirdropDeploymentAndReward", function () {
        await LBT_CONTRACT.approve(await claimairdrop.getAddress(), approveAmount);
 
        
-       expect(await claimairdrop.connect(impersonatedSigner).claimAirdrop(merkleProof))    
+       expect(await claimairdrop.connect(impersonatedSigner).claimAirdrop(merkleProof))
+       .to.emit(claimairdrop, "AirdropClaimed") 
+       .withArgs(impersonatedSigner.address, ) 
+    })
+
+    it("Should check if holder can not claim twice", async () => {
+      const {
+        owner, 
+        impersonatedSigner, 
+        rewardtoken, 
+        claimairdrop, 
+        merkleProof
+       } = await loadFixture(deployClaimtoken);
+
+      const tx = await owner.sendTransaction({
+        to: impersonatedSigner.address,
+        value: ethers.parseUnits("0.1", "ether"), // Send 0.1 ETH
+      });
+
+      tx.wait()
+
+       const approveAmount = ethers.parseUnits("9000", 18);
+
+       const LBT = await rewardtoken.getAddress()
+       const LBT_CONTRACT = await ethers.getContractAt("/contracts/interfaces/IERC20.sol:IERC20", LBT);
+
+       await LBT_CONTRACT.approve(await claimairdrop.getAddress(), approveAmount);
+
+       expect(await claimairdrop.connect(impersonatedSigner).claimAirdrop(merkleProof))
+        .to.be.revertedWith("Airdrop claimed already")
     })
   });
 
-   
 });
