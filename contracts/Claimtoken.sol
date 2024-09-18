@@ -41,6 +41,4 @@ contract Claimtoken {
 
         emit AirdropClaimed(msg.sender, block.timestamp);
     }
-
-
 }
