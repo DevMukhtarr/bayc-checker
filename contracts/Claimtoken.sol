@@ -24,13 +24,22 @@ contract Claimtoken {
         tokenAddress = IERC20(_tokenAddress);
     }
 
-    function claimAirdrop (bytes32[] memory _merkleProof, uint256 _amount, string PendingBalanceUpdate) public {
+    function claimAirdrop (bytes32[] memory _merkleProof, uint256 _amount, string memory _PendingBalanceUpdate) public {
         require(msg.sender != address(0), "Address zero detected");
         require(!claimedAirdrop[msg.sender], "Airdrop claimed already");
 
-        bytes32 leaf = keccak256(abi.encodePacked(msg.sender, _amount, PendingBalanceUpdate));
+        bytes32 leaf = keccak256(abi.encodePacked(msg.sender, _amount, _PendingBalanceUpdate));
 
-        IERC20(_tokenAddress).transferFrom
+        require(MerkleProof.verify(_merkleProof, merkleRoot, leaf), "Invalid merkleproof.");
+
+        require(
+            tokenAddress.transfer(msg.sender, _amount), 
+            "Transfer failed"
+            );
+
+        claimedAirdrop[msg.sender] = true;
+
+        emit AirdropClaimed(msg.sender, block.timestamp);
     }
 
 
