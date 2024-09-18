@@ -52,7 +52,7 @@ describe("AirdropDeploymentAndReward", function () {
     const CLAIMAIRDROP = await hre.ethers.getContractFactory("Claimtoken");
     const claimairdrop = await CLAIMAIRDROP.deploy(rewardtoken, rootHash);
 
-    return { rewardtoken, owner, claimairdrop };
+    return { rewardtoken, owner, merkleTree,claimairdrop, rootHash, impersonatedSigner, impersonatedSigner2 };
   }
 
   describe("Deployment", function () {
@@ -63,7 +63,29 @@ describe("AirdropDeploymentAndReward", function () {
     })
 
     it("Should check if Claimtoken gets merkle root properly and uses rewardtoken address", async () => {
-      
+      const {rootHash, owner, rewardtoken, claimairdrop} = await loadFixture(deployClaimtoken)
+
+      // check if the address in the contract matches the deployed reward token addres
+      expect(await claimairdrop.tokenAddress()).to.equal(rewardtoken)
+      console.log(rootHash)
+      // check if the merkle root is correct
+      expect(await claimairdrop.merkleRoot()).to.equal(rootHash)
+    })
+
+    it("Should check if claim is successful", async () => {
+      const {
+        owner, 
+        impersonatedSigner, 
+        impersonatedSigner2, 
+        rewardtoken, 
+        merkleTree,
+        claimairdrop, 
+       } = await loadFixture(deployClaimtoken);
+
+       const transferAmount = ethers.parseUnits("5383", 18);
+
+      //  await rewardtoken.transfer(merkleAirdrop, transferAmount);
+
     })
   });
 

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Claimtoken {
     IERC20 public immutable tokenAddress;
-    bytes32 merkleRoot;
+    bytes32 public merkleRoot;
     address public owner; 
 
     mapping (address => bool) claimedAirdrop;
