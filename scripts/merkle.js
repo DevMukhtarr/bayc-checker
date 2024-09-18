@@ -19,7 +19,7 @@ fs.createReadStream(path)
     const PendingBalanceUpdate = row[2].trim()
 
     const leaf = keccak256(
-      ether.solidityPacked(["address", "uint256"], [address, quantity, PendingBalanceUpdate])
+      ether.solidityPacked(["address", "uint256", "string"], [address, quantity, PendingBalanceUpdate])
   )
     addresses.push(leaf);
   })
@@ -31,21 +31,22 @@ fs.createReadStream(path)
     const merkleTree = new MerkleTree(addresses, keccak256, {sortPairs: true});
 
     const rootHash = merkleTree.getHexRoot();
-    console.log("Root hash:", rootHash);
 
-//     const targetEntry = {
-//       address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-//       amount: ether.parseUnits("110", 18)
-//   }
+    const targetEntry = {
+      address: "0xdefc10efb0e353a00f9727f87f3071a9bc1fb245",
+      amount: ether.parseUnits("5", 18),
+      PendingBalanceUpdate: "No"
+  }
 
     // const claimingAddress = leafNode[2];
-//     const leaf = keccak256(
-//       ether.solidityPacked(["address", "uint256"], [targetEntry.address, targetEntry.amount])
-//   );
+    const leaf = keccak256(
+      ether.solidityPacked(["address", "uint256", "string"],
+         [targetEntry.address, targetEntry.amount, targetEntry.PendingBalanceUpdate])
+  );
 
    
-//     const hexProof = merkleTree.getHexProof(leaf);
-//     console.log(hexProof)
-//     console.log(merkleTree.verify(hexProof, leaf, rootHash))
-//     console.log(rootHash.toString("hex"))
+    const hexProof = merkleTree.getHexProof(leaf);
+    console.log(hexProof)
+    console.log(merkleTree.verify(hexProof, leaf, rootHash))
+    console.log(rootHash.toString("hex"))
   });
